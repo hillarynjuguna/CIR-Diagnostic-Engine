@@ -63,7 +63,7 @@ export async function callWithFallback(
   providers: GovernanceProvider[],
   systemPrompt: string,
   userPrompt: string,
-  parse: (text: string) => any
+  parse: (parsed: any) => any
 ): Promise<{ result: any; providerName: string } | null> {
   for (const provider of providers) {
     if (!provider.key) continue
