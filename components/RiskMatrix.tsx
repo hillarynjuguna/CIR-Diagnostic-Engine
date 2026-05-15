@@ -6,11 +6,27 @@ interface Props {
   entries: RiskMatrixEntry[]
 }
 
-const SEVERITY_COLORS: Record<string, string> = {
-  CRITICAL: 'bg-accent-red/20 text-accent-red border-accent-red/30',
-  HIGH: 'bg-accent-amber/20 text-accent-amber border-accent-amber/30',
-  MEDIUM: 'bg-accent-blue/20 text-accent-blue border-accent-blue/30',
-  LOW: 'bg-accent-green/20 text-accent-green border-accent-green/30',
+const DISPLAY_NAMES: Record<string, string> = {
+  'bounded-verifiability-latency': 'Reversibility & Safeguards',
+  'explicit-compositional-contracts': 'Component Boundaries',
+  'continuous-deterministic-layer-regression': 'Rules That Stay True',
+  'dual-ownership': 'Who Decides What',
+}
+
+const SEVERITY_CONFIG: Record<string, { bg: string; text: string; border: string }> = {
+  CRITICAL: { bg: 'bg-accent-red/10', text: 'text-accent-red', border: 'border-accent-red/30' },
+  HIGH:     { bg: 'bg-accent-amber/10', text: 'text-accent-amber', border: 'border-accent-amber/30' },
+  MEDIUM:   { bg: 'bg-accent-blue/10', text: 'text-accent-blue', border: 'border-accent-blue/30' },
+  LOW:      { bg: 'bg-accent-green/10', text: 'text-accent-green', border: 'border-accent-green/30' },
+}
+
+function SeverityBadge({ level }: { level: string }) {
+  const c = SEVERITY_CONFIG[level] || SEVERITY_CONFIG.MEDIUM
+  return (
+    <span className={`inline-block rounded border px-2 py-0.5 font-mono text-xs ${c.bg} ${c.text} ${c.border}`}>
+      {level}
+    </span>
+  )
 }
 
 export default function RiskMatrix({ entries }: Props) {
@@ -21,40 +37,35 @@ export default function RiskMatrix({ entries }: Props) {
       <h3 className="mb-4 font-mono text-sm font-semibold uppercase tracking-wider text-ink-secondary">
         Operational Risk Matrix
       </h3>
-      <div className="overflow-x-auto">
-        <table className="w-full font-mono text-xs">
-          <thead>
-            <tr className="border-b border-surface-border text-left text-ink-muted">
-              <th className="pb-2 pr-4 font-semibold">Failure Mode</th>
-              <th className="pb-2 pr-4 font-semibold">Likelihood</th>
-              <th className="pb-2 pr-4 font-semibold">Impact</th>
-              <th className="pb-2 font-semibold">Primitives</th>
-            </tr>
-          </thead>
-          <tbody>
-            {entries.map((entry, i) => (
-              <tr key={i} className="border-b border-surface-border/50">
-                <td className="py-3 pr-4 text-ink-primary">
-                  <div className="font-semibold">{entry.failureMode}</div>
-                  <div className="mt-0.5 text-ink-muted">{entry.description}</div>
-                </td>
-                <td className="py-3 pr-4">
-                  <span className={`inline-block rounded border px-2 py-0.5 ${SEVERITY_COLORS[entry.likelihood] || ''}`}>
-                    {entry.likelihood}
-                  </span>
-                </td>
-                <td className="py-3 pr-4">
-                  <span className={`inline-block rounded border px-2 py-0.5 ${SEVERITY_COLORS[entry.impact] || ''}`}>
-                    {entry.impact}
-                  </span>
-                </td>
-                <td className="py-3 text-ink-secondary">
-                  {entry.affectedPrimitives.join(', ')}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="space-y-4">
+        {entries.map((entry, i) => {
+          const displayPrimitives = entry.affectedPrimitives
+            .map(id => DISPLAY_NAMES[id] || id)
+            .join(', ')
+
+          return (
+            <div
+              key={i}
+              className="rounded-md border border-surface-border bg-surface-overlay p-4"
+            >
+              <div className="mb-2 flex items-start justify-between gap-4">
+                <div className="font-sans text-sm font-semibold text-ink-primary">
+                  {entry.failureMode}
+                </div>
+                <div className="flex shrink-0 gap-2">
+                  <SeverityBadge level={entry.likelihood} />
+                  <SeverityBadge level={entry.impact} />
+                </div>
+              </div>
+              <p className="mb-2 text-sm leading-relaxed text-ink-secondary">{entry.description}</p>
+              {displayPrimitives && (
+                <div className="font-mono text-xs text-ink-muted">
+                  Related: {displayPrimitives}
+                </div>
+              )}
+            </div>
+          )
+        })}
       </div>
     </div>
   )

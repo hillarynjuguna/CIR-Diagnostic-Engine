@@ -4,63 +4,98 @@ import type { StabilityAssessment } from '@/lib/types'
 
 interface Props {
   stability: StabilityAssessment
+  onRescan?: () => void
 }
 
-const SEVERITY_STYLES = {
-  minor: 'border-accent-blue/30 bg-accent-blue/5 text-accent-blue',
-  moderate: 'border-accent-amber/30 bg-accent-amber/5 text-accent-amber',
-  major: 'border-accent-red/30 bg-accent-red/5 text-accent-red',
+const DISPLAY_NAMES: Record<string, string> = {
+  'bounded-verifiability-latency': 'Reversibility & Safeguards',
+  'explicit-compositional-contracts': 'Component Boundaries',
+  'continuous-deterministic-layer-regression': 'Rules That Stay True',
+  'dual-ownership': 'Who Decides What',
 }
 
-export default function StabilityPanel({ stability }: Props) {
-  const disagreement = stability.providerDisagreement
-  const severityStyle = disagreement
-    ? SEVERITY_STYLES[disagreement.severity]
-    : 'border-accent-amber/30 bg-accent-amber/5 text-accent-amber'
+export default function StabilityPanel({ stability, onRescan }: Props) {
+  const d = stability.providerDisagreement
+
+  const isMajor = d?.severity === 'major'
+  const isModerate = d?.severity === 'moderate'
+
+  const borderColor = isMajor
+    ? 'border-accent-red/40'
+    : isModerate
+    ? 'border-accent-amber/40'
+    : 'border-accent-blue/40'
+
+  const headerColor = isMajor ? 'text-accent-red' : isModerate ? 'text-accent-amber' : 'text-accent-blue'
+  const bgColor = isMajor
+    ? 'bg-accent-red/5'
+    : isModerate
+    ? 'bg-accent-amber/5'
+    : 'bg-accent-blue/5'
+
+  // Translate divergent field IDs to display names
+  const divergentDisplayNames = (d?.divergentFields || []).map(
+    f => DISPLAY_NAMES[f] || f
+  )
 
   return (
-    <div className={`rounded-lg border p-4 ${severityStyle}`}>
-      <div className="mb-2 flex items-center gap-2">
-        <span className="font-mono text-xs font-semibold uppercase tracking-wider">
-          Stability Assessment
-        </span>
-        {disagreement && (
-          <span className="rounded border border-current px-1.5 py-0.5 font-mono text-xs">
-            {disagreement.severity.toUpperCase()} DIVERGENCE
+    <div className={`rounded-lg border p-6 ${borderColor} ${bgColor}`}>
+      <div className="mb-3 flex items-center gap-2">
+        <span className="text-lg">⚠</span>
+        <h3 className={`font-sans text-sm font-semibold ${headerColor}`}>
+          Provider Disagreement Detected
+        </h3>
+        {d && (
+          <span className={`ml-auto rounded border border-current px-2 py-0.5 font-mono text-xs ${headerColor}`}>
+            {d.severity.toUpperCase()}
           </span>
         )}
       </div>
 
-      <div className="space-y-1.5">
-        {stability.warnings.map((w, i) => (
-          <p key={i} className="font-mono text-xs leading-relaxed opacity-90">
-            ⚠ {w}
+      {d && (
+        <div className="mb-4 space-y-2 text-sm text-ink-secondary">
+          <p>
+            <span className="font-semibold text-ink-primary">{d.primaryProvider}</span> and{' '}
+            <span className="font-semibold text-ink-primary">{d.verificationProvider}</span> produced
+            materially different assessments on:
           </p>
-        ))}
-      </div>
-
-      {disagreement && (
-        <div className="mt-3 border-t border-current/20 pt-3 font-mono text-xs">
-          <div className="flex flex-wrap gap-4">
-            <span>
-              Extraction: <span className="font-semibold">{disagreement.primaryProvider}</span>
-            </span>
-            <span>
-              Narrative: <span className="font-semibold">{disagreement.verificationProvider}</span>
-            </span>
-          </div>
-          {disagreement.divergentFields.length > 0 && (
-            <div className="mt-1.5 opacity-75">
-              Divergent fields: {disagreement.divergentFields.join(', ')}
-            </div>
-          )}
-          {disagreement.severity === 'major' && (
-            <div className="mt-2 font-semibold">
-              Major divergence detected. The overall governability classification is provisional. Request a manual review or re-run with a different model configuration.
-            </div>
-          )}
+          <ul className="ml-4 space-y-1">
+            {divergentDisplayNames.map((name, i) => (
+              <li key={i} className="font-mono text-xs">— {name}</li>
+            ))}
+          </ul>
+          <p className="mt-3 text-sm text-ink-secondary">
+            This means the architecture description may be ambiguous on these dimensions.
+            The assessment is provisional.
+          </p>
         </div>
       )}
+
+      {stability.warnings.length > 0 && (
+        <div className="mb-4 space-y-1">
+          {stability.warnings.map((w, i) => (
+            <p key={i} className="font-mono text-xs leading-relaxed text-ink-secondary">⚠ {w}</p>
+          ))}
+        </div>
+      )}
+
+      <div className="rounded-md border border-surface-border bg-surface-base p-4">
+        <div className="mb-2 font-mono text-xs font-semibold text-ink-secondary">Recommended actions</div>
+        <ul className="space-y-1.5 font-mono text-xs text-ink-muted">
+          <li>— Re-describe your architecture with more specific detail on the flagged dimensions</li>
+          <li>— Treat these findings as provisional pending human review</li>
+          {onRescan && (
+            <li>
+              <button
+                onClick={onRescan}
+                className="text-accent-amber hover:text-amber-400 transition-colors"
+              >
+                — Re-scan with revised description →
+              </button>
+            </li>
+          )}
+        </ul>
+      </div>
     </div>
   )
 }
