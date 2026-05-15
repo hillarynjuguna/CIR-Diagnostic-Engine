@@ -129,16 +129,19 @@ npm run dev
 
 ---
 
-## Known Open Gaps (Constitutional Authority Disclosure)
+## Constitutional Authority Disclosure
 
-The engine does not yet satisfy the framework it evaluates:
+This engine evaluates AI architectures against the four canonical CIR governance primitives. It does not yet satisfy the framework it evaluates:
 
-1. **CDLR absent:** Provider weights reset on cold start. No continuous regression testing of the extraction layer.
-2. **ECC absent:** No formal compositional contracts between the extraction phase and narrative phase.
-3. **BVL partial:** The stability check fires after evaluation, not before. A major divergence cannot halt the response mid-pipeline.
-4. **DO absent:** The extraction provider and narrative provider are selected from the same pool without structural authority separation.
+CDLR absent: Provider weights reset on cold start. No continuous regression testing against the Known Failure Corpus.
 
-These gaps are documented. Documentation does not close them. They are remediation targets for v3.
+ECC absent: No formal compositional contract between the extraction provider and the narrative provider.
+
+BVL partial: A major provider disagreement cannot halt the pipeline mid-execution. It can only flag the output.
+
+DO absent: Extraction and narrative providers are selected from the same pool. No structural separation of semantic and execution authority.
+
+These gaps are documented, not hidden. The engine knows what it is. It tells you what it isn't.
 
 ---
 
