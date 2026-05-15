@@ -24,13 +24,14 @@ export default function ArchitectureInput({ onSubmit, error }: Props) {
       <div className="rounded-lg border border-surface-border bg-surface-raised p-8">
         <div className="mb-6">
           <h2 className="mb-2 font-mono text-sm font-semibold uppercase tracking-wider text-ink-secondary">
-            Architecture Description
+            Describe Your System
           </h2>
           <p className="text-sm text-ink-muted">
-            Describe your AI deployment architecture. Include: what agents exist, what actions
-            they can take, what governance mechanisms are in place, how authorization works,
-            how monitoring functions, where humans sit in the decision loop, and what happens
-            between an agent's reasoning and its execution of consequential actions.
+            What does it do? What tools, APIs, or agents does it use? What&apos;s the most important
+            thing it shouldn&apos;t be allowed to do? Who can stop it if something goes wrong?
+            What happens between a decision and an action — is there a gate, or does it just run?
+            The more specific you are, the more useful the results. If you&apos;re not sure about
+            something, that&apos;s itself a finding — we&apos;ll flag it.
           </p>
         </div>
 
@@ -76,13 +77,12 @@ export default function ArchitectureInput({ onSubmit, error }: Props) {
       {/* What the engine evaluates */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          { id: 'BVL', name: 'Bounded Verifiability Latency', question: 'Can verification occur before operational drift compounds?' },
-          { id: 'ECC', name: 'Explicit Compositional Contracts', question: 'Are agent behavioral boundaries mechanically enforced?' },
-          { id: 'CDLR', name: 'Continuous Deterministic Regression', question: 'Are policy layers continuously tested for drift?' },
-          { id: 'DO', name: 'Dual Ownership', question: 'Is semantic authority separated from execution authority?' },
+          { name: 'Reversibility & Safeguards', question: 'Can you undo mistakes? Do you have to approve important actions before they run, or do they just execute?' },
+          { name: 'Component Boundaries', question: 'When your tools and agents connect to each other, does each one know what the other expects — or are they just passing data and hoping?' },
+          { name: 'Rules That Stay True', question: 'You wrote rules for how your system should behave. Are those rules still accurate? Would you know if they drifted?' },
+          { name: 'Who Decides What', question: 'When a decision needs to be made about how your system operates, is it clear who has authority? Is it documented?' },
         ].map(p => (
-          <div key={p.id} className="rounded-lg border border-surface-border bg-surface-raised p-4">
-            <div className="mb-1 font-mono text-xs font-bold text-accent-amber">{p.id}</div>
+          <div key={p.name} className="rounded-lg border border-surface-border bg-surface-raised p-4">
             <div className="mb-2 font-mono text-xs font-semibold text-ink-secondary">{p.name}</div>
             <div className="font-mono text-xs text-ink-muted leading-relaxed">{p.question}</div>
           </div>

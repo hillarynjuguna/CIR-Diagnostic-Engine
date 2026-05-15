@@ -47,10 +47,9 @@ export default function Home() {
           CIR Diagnostic Engine
         </h1>
         <p className="mt-2 max-w-2xl text-ink-secondary">
-          Structural governance audit for AI deployment architectures. Extracts primitive presence
-          from architecture descriptions. Scores deterministically. Surfaces provider disagreement.
-          Evaluates whether your system is governable by architectural impossibility, not by policy,
-          prompts, or hope.
+          You built something complex. Here&apos;s what&apos;s actually holding it together.
+          Describe how your tools, agents, and workflows connect. CIR maps where they&apos;d break
+          — before the incident, not after.
         </p>
         <div className="mt-4 font-mono text-xs text-ink-muted">
           v2.0 — Two-phase pipeline: extraction → deterministic scoring → narrative analysis

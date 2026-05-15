@@ -21,7 +21,23 @@ const MECHANISM_LABELS: Record<string, { label: string; color: string }> = {
   undefined: { label: 'UNDETECTED', color: 'text-ink-muted' },
 }
 
+const DISPLAY_NAMES: Record<string, string> = {
+  'bounded-verifiability-latency': 'Reversibility & Safeguards',
+  'explicit-compositional-contracts': 'Component Boundaries',
+  'continuous-deterministic-layer-regression': 'Rules That Stay True',
+  'dual-ownership': 'Who Decides What',
+}
+
+const DISPLAY_QUESTIONS: Record<string, string> = {
+  'bounded-verifiability-latency': 'Can you undo mistakes? Do you have to approve important actions before they run, or do they just execute?',
+  'explicit-compositional-contracts': 'When your tools and agents connect to each other, does each one know what the other expects — or are they just passing data and hoping?',
+  'continuous-deterministic-layer-regression': 'You wrote rules for how your system should behave. Are those rules still accurate? Would you know if they drifted?',
+  'dual-ownership': 'When a decision needs to be made about how your system operates, is it clear who has authority? Is it documented?',
+}
+
 export default function PrimitiveCard({ assessment }: Props) {
+  const displayName = DISPLAY_NAMES[assessment.primitiveId] || assessment.primitiveName
+  const displayQuestion = DISPLAY_QUESTIONS[assessment.primitiveId]
   const [showEvidence, setShowEvidence] = useState(false)
   const severityColor = SEVERITY_COLORS[assessment.severity] || 'text-ink-secondary border-surface-border'
   const mechanism = MECHANISM_LABELS[assessment.presence.mechanismType] || MECHANISM_LABELS.undefined
@@ -39,7 +55,7 @@ export default function PrimitiveCard({ assessment }: Props) {
       <div className="mb-3 flex items-start justify-between">
         <div>
           <h4 className="font-mono text-sm font-semibold text-ink-primary">
-            {assessment.primitiveName}
+            {displayName}
           </h4>
           <div className="mt-1 flex items-center gap-2">
             <span className={`inline-block rounded border px-2 py-0.5 font-mono text-xs ${severityColor}`}>
@@ -63,6 +79,13 @@ export default function PrimitiveCard({ assessment }: Props) {
           style={{ width: `${assessment.score}%` }}
         />
       </div>
+
+      {/* Plain-language question */}
+      {displayQuestion && (
+        <p className="mb-2 font-mono text-xs leading-relaxed text-ink-muted italic">
+          {displayQuestion}
+        </p>
+      )}
 
       {/* Explanation */}
       <p className="mb-3 font-mono text-xs leading-relaxed text-ink-secondary">

@@ -22,9 +22,9 @@ export default function RemediationPanel({ priorities }: Props) {
       </ol>
       <div className="mt-4 border-t border-surface-border pt-3">
         <p className="font-mono text-xs text-ink-muted">
-          All recommendations are architectural changes. Policy updates, prompt engineering, and
-          monitoring improvements are not included — they address symptoms, not structural gaps.
-          The absence of a pre-execution gate cannot be remediated by strengthening the system prompt.
+          Fix what&apos;s irreversible first. If your system can do something that can&apos;t be undone,
+          and there&apos;s no human approval gate before it executes — that&apos;s the gap to close today.
+          Everything else can follow.
         </p>
       </div>
     </div>

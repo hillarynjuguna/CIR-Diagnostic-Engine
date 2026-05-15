@@ -3,21 +3,18 @@
 import { useEffect, useState } from 'react'
 
 const PHASES = [
-  'Parsing architecture description...',
-  'Identifying execution boundaries...',
-  'Mapping authority delegation chains...',
-  'Phase 1: Extracting primitive presence matrix...',
-  'Evaluating Bounded Verifiability Latency...',
-  'Evaluating Explicit Compositional Contracts...',
-  'Evaluating Continuous Deterministic Regression...',
-  'Evaluating Dual Ownership structure...',
-  'Computing deterministic scores from extraction...',
-  'Phase 2: Generating narrative analysis...',
+  'Mapping your system\'s components...',
+  'Identifying authority boundaries...',
+  'Checking safeguard mechanisms...',
+  'Analysing rule persistence...',
+  'Detecting where consequences outrun comprehension...',
+  'Assembling structural map...',
+  'Running analysis...',
   'Detecting latent failure modes...',
-  'Mapping governance topology...',
-  'Decomposing confidence across epistemic dimensions...',
+  'Mapping decision topology...',
+  'Decomposing confidence...',
   'Running stability check...',
-  'Assembling constitutional diagnostic report...',
+  'Generating findings...',
 ]
 
 export default function ScanningState() {
@@ -43,7 +40,7 @@ export default function ScanningState() {
             Constitutional MRI Scan in Progress
           </h2>
           <p className="mt-1 text-sm text-ink-muted">
-            Two-phase pipeline: extraction layer → deterministic scoring → narrative analysis
+            Analysing your system&apos;s structural properties
           </p>
         </div>
 

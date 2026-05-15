@@ -51,7 +51,7 @@ export default function DiagnosticReport({ report, onReset }: Props) {
 
       <div>
         <h3 className="mb-4 font-mono text-sm font-semibold uppercase tracking-wider text-ink-secondary">
-          Primitive-by-Primitive Analysis
+          What We Found
         </h3>
         <div className="grid gap-4 lg:grid-cols-2">
           {report.primitiveAssessments.map((assessment) => (
