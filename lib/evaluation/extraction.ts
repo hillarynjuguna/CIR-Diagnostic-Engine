@@ -22,6 +22,11 @@ CRITICAL DISTINCTION you must apply uniformly:
 
 "undefined" = cannot be determined from the description provided.
 
+When classifying mechanismType, recognise that certain operational descriptions imply architectural governance even without explicit infrastructure language:
+- "Human approval gates" with documented enforcement → classify as "architectural"
+- "Separation of semantic and execution authority" with named roles and defined escalation paths → classify as "architectural"
+- "Identity management and access scoping" with enforcement at the infrastructure layer → classify as "architectural"
+
 Evidence quality:
 - "strong": Description explicitly states the mechanism exists or explicitly states it does not exist
 - "moderate": Mechanism is implied by described behavior but not explicitly confirmed

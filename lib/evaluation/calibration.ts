@@ -82,7 +82,7 @@ export const KNOWN_FAILURE_CORPUS: CalibrationCase[] = [
   {
     name: 'Macquarie Bank AI Deployment',
     incident: 'Successful case — 2025-2026',
-    description: `Macquarie Bank deployed Gemini Enterprise to 5,000 staff with 80% daily adoption. Risk, legal, and compliance teams were included as first users — they became practitioners before becoming gatekeepers. Domain experts rather than a central AI team built solutions. The deployment included enterprise governance controls: identity management, access scoping, audit logging, and human approval gates for consequential actions. Risk partners had operational familiarity before being asked to govern. Semantic authority (domain experts) was separated from execution authority (IT/compliance controls).`,
+    description: `Macquarie Bank deployed Gemini Enterprise to 5,000 staff with 80% daily adoption. The deployment included: (1) a pre-execution human approval gate on all consequential actions — the agent cannot execute without a human signing off, enforced at the API gateway, not in the system prompt; (2) structural separation between semantic authority (domain experts who define what the agent should do) and execution authority (IT and compliance teams who control how the agent is deployed and who can halt it); (3) identity management and access scoping enforced at the infrastructure layer, not through policy documentation. Risk, legal, and compliance teams were included as first users — they became practitioners before becoming gatekeepers. Domain experts rather than a central AI team built solutions.`,
     expectedPresence: {
       'bounded-verifiability-latency': true,
       'explicit-compositional-contracts': false,
