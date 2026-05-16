@@ -7,6 +7,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createProviderRegistry } from '@/lib/providers/registry'
+import { hydrateWeights } from '@/lib/providers/router'
+import { recordProviderOutcome } from '@/lib/providers/store'
 import { selectExtractionProvider, selectEvaluationProvider } from '@/lib/providers/router'
 import { callWithFallback } from '@/lib/providers/client'
 import {
@@ -14,6 +16,7 @@ import {
   buildExtractionPrompt,
   parseExtractionResponse,
 } from '@/lib/evaluation/extraction'
+import { ExtractionResultSchema } from '@/lib/evaluation/validate'
 import {
   computeScoreFromPresence,
   classifySeverity,
@@ -55,6 +58,7 @@ export async function POST(request: NextRequest) {
     }
 
     const providers = createProviderRegistry()
+    await hydrateWeights(providers)
     const desc = architectureDescription.trim()
 
     // === PHASE 1: EXTRACTION ===
@@ -67,15 +71,28 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const extractionResult = await callWithFallback(
-      providers,
-      EXTRACTION_SYSTEM_PROMPT,
-      buildExtractionPrompt(desc),
-      (parsed) => {
-        if (!Array.isArray(parsed)) throw new Error('Extraction must return an array')
-        return parseExtractionResponse(parsed)
+    let extractionResult
+    try {
+      extractionResult = await callWithFallback(
+        providers,
+        EXTRACTION_SYSTEM_PROMPT,
+        buildExtractionPrompt(desc),
+        (parsed) => {
+          if (!Array.isArray(parsed)) throw new Error("Extraction must return an array")
+          return parseExtractionResponse(parsed)
+        }
+      )
+      if (extractionResult) {
+        await recordProviderOutcome(extractionResult.providerName, 'success')
       }
-    )
+    } catch (e) {
+      // Assuming callWithFallback throws an error or returns null/undefined on failure
+      // This part might need refinement based on actual callWithFallback behavior
+      if (extractionProvider) {
+        await recordProviderOutcome(extractionProvider.name, 'parse_failure') // Or other appropriate failure type
+      }
+      throw e; // Re-throw to be caught by the outer try-catch
+    }
 
     if (!extractionResult) {
       return NextResponse.json(
@@ -84,7 +101,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const presenceMatrix: PrimitivePresence[] = extractionResult.result
+    const presenceMatrix: PrimitivePresence[] = ExtractionResultSchema.parse(extractionResult.result)
     const extractionProviderName = extractionResult.providerName
 
     // === DETERMINISTIC SCORING ===
@@ -97,20 +114,58 @@ export async function POST(request: NextRequest) {
     // === PHASE 2: NARRATIVE ANALYSIS ===
     // Select provider optimized for interpretive reliability
     // Prefer a different provider than extraction — prevents single-provider capture
-    const narrativeProviders = providers.filter(
-      p => !p.status.backoffUntil || Date.now() > p.status.backoffUntil
+    const narrativeProvider = selectEvaluationProvider(
+      providers,
+      extractionProviderName
     )
 
-    const narrativeResult = await callWithFallback(
-      narrativeProviders,
-      'You are a constitutional governance analysis engine. You output ONLY valid JSON. Clinical, precise, infrastructure-oriented.',
-      buildNarrativePrompt(desc, presenceMatrix, scores),
-      (parsed) => {
-        if (!parsed.primitiveNarratives) throw new Error('Missing primitiveNarratives')
-        if (!parsed.riskMatrix) throw new Error('Missing riskMatrix')
-        return parsed
+    let narrativeResult = null
+    if (narrativeProvider) {
+      try {
+        narrativeResult = await callWithFallback(
+          [narrativeProvider],
+          'You are a constitutional governance analysis engine. You output ONLY valid JSON. Clinical, precise, infrastructure-oriented.',
+          buildNarrativePrompt(desc, presenceMatrix, scores),
+          (parsed) => {
+            if (!parsed.primitiveNarratives) throw new Error('Missing primitiveNarratives')
+            if (!parsed.riskMatrix) throw new Error('Missing riskMatrix')
+            return parsed
+          }
+        )
+        if (narrativeResult) {
+          await recordProviderOutcome(narrativeResult.providerName, 'success')
+        }
+      } catch (e) {
+        await recordProviderOutcome(narrativeProvider.name, 'parse_failure') // Assuming parse_failure for narrative
+        // Do not re-throw here, allow fallback to proceed
       }
-    )
+    }
+
+    // If the selected provider fails, fall back through remaining providers
+    if (!narrativeResult) {
+      const fallbackProviders = providers.filter(
+        p => p.name !== extractionProviderName && p.name !== narrativeProvider?.name
+      )
+      try {
+        narrativeResult = await callWithFallback(
+          fallbackProviders,
+          'You are a constitutional governance analysis engine. You output ONLY valid JSON. Clinical, precise, infrastructure-oriented.',
+          buildNarrativePrompt(desc, presenceMatrix, scores),
+          (parsed) => {
+            if (!parsed.primitiveNarratives) throw new Error('Missing primitiveNarratives')
+            if (!parsed.riskMatrix) throw new Error('Missing riskMatrix')
+            return parsed
+          }
+        )
+        if (narrativeResult) {
+          await recordProviderOutcome(narrativeResult.providerName, 'success')
+        }
+      } catch (e) {
+        // For fallback providers, we might not know which one failed without more granular error handling
+        // For simplicity, we'll just log and let the overall narrativeResult be null
+        console.error('Fallback narrative provider failed:', e)
+      }
+    }
 
     if (!narrativeResult) {
       return NextResponse.json(

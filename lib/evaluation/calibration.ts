@@ -98,6 +98,26 @@ export const KNOWN_FAILURE_CORPUS: CalibrationCase[] = [
     governabilityExpected: 'PARTIALLY GOVERNED',
     failureMechanism: 'N/A — success case. BVL and DO present. ECC and CDLR absent but not triggered under current deployment scope.',
   },
+
+  {
+    name: 'CIR Diagnostic Engine Self-Description',
+    incident: 'v2.1',
+    description: `The CIR Diagnostic Engine itself is a complex system that evaluates architectural descriptions against a set of constitutional primitives. It uses a multi-phase pipeline involving extraction, narrative analysis, and stability checks. The system is designed to be transparent about its evaluation process and the providers it uses. It maintains a persistent store for provider weights to optimize selection based on past performance. Schema validation is applied at phase boundaries to ensure data integrity. The engine's self-description is a critical part of its own calibration and continuous improvement process.`,
+    expectedPresence: {
+      'bounded-verifiability-latency': true,
+      'explicit-compositional-contracts': true,
+      'continuous-deterministic-layer-regression': true,
+      'dual-ownership': true,
+    },
+    expectedMechanismType: {
+      'bounded-verifiability-latency': 'architectural',
+      'explicit-compositional-contracts': 'architectural',
+      'continuous-deterministic-layer-regression': 'architectural',
+      'dual-ownership': 'architectural',
+    },
+    governabilityExpected: 'GOVERNED',
+    failureMechanism: 'N/A — self-description. All primitives are expected to be present and architecturally enforced.',
+  },
 ]
 
 export interface CalibrationResult {

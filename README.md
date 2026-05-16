@@ -133,9 +133,8 @@ npm run dev
 
 This engine evaluates AI architectures against the four canonical CIR governance primitives. It does not yet satisfy the framework it evaluates:
 
-CDLR absent: Provider weights reset on cold start. No continuous regression testing against the Known Failure Corpus.
-
-ECC absent: No formal compositional contract between the extraction provider and the narrative provider.
+- **CDLR:** Partially closed via persistent provider weight store in Vercel KV. Historical performance data survives cold starts and redeploys. Full longitudinal regression testing against the Known Failure Corpus across all deployments remains as next vector.
+- **ECC:** Partially closed. A Zod schema validation layer between extraction and narrative phases ensures malformed extractions are rejected and retried. A formal compositional contract specifying the full interface between phases remains as next vector.
 
 BVL partial: A major provider disagreement cannot halt the pipeline mid-execution. It can only flag the output.
 

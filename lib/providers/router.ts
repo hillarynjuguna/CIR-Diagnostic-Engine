@@ -3,6 +3,24 @@
 // Doc4: Dimension-specific routing — extraction vs verification tasks weight differently
 
 import type { GovernanceProvider } from './types'
+import { loadWeights } from './store'
+
+// Hydrate provider weights from persistent store on cold start
+export async function hydrateWeights(providers: GovernanceProvider[]): Promise<void> {
+  const stored = await loadWeights()
+  if (!stored) return
+
+  for (const provider of providers) {
+    const storedProvider = stored[provider.name]
+    if (storedProvider) {
+      provider.weights.structuralReliability = storedProvider.structuralReliability
+      provider.weights.interpretiveReliability = storedProvider.interpretiveReliability
+      provider.weights.latencyReliability = storedProvider.latencyReliability
+      provider.weights.schemaReliability = storedProvider.schemaReliability
+      provider.status.consecutiveFailures = storedProvider.consecutiveFailures
+    }
+  }
+}
 
 export function getAvailableProviders(providers: GovernanceProvider[]): GovernanceProvider[] {
   return providers.filter(p => {
