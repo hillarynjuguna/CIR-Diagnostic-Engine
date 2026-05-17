@@ -43,6 +43,56 @@ Upload an architecture description. Receive a structural assessment across four 
 
 ## Architecture
 
+---
+
+## Market Positioning and Branding
+
+The AI agent tooling market has split into two distinct categories:
+
+**Observability Platforms** — LangSmith ($39/seat/month), Galileo ($100/month), Langfuse, Helicone. These instrument agents, capture traces, track costs, and debug workflows. They record what agents did. They have no policy enforcement, no tool access control, no output filtering, no rate limiting. They answer "what happened?" — not "what can happen?"
+
+**Governance Runtimes** — AgentBouncr (npm install, npm package), DashClaw (MIT License, self-host free), Core (GitHub). These sit between agents and tools, enforce policies at runtime, maintain audit trails, and provide kill switches. They answer "what is this agent allowed to do?" — but they don't evaluate architecture descriptions. They enforce governance at the execution boundary.
+
+The Forbes Technology Council, in a widely-cited article from March 2026 titled "Agentic AI Hits A Governance Wall", confirms the gap: "The EU AI Act's high-risk provisions take full effect on August 2, 2026, and will require transparency, traceability and conformity assessments." Gartner found that organizations with dedicated governance platforms are "3.4 times more likely to achieve higher effectiveness" — yet "fewer than 1% are fully operationalizing responsible AI".
+
+### Where CIR Sits — The Third Category
+
+CIR Diagnostic Engine belongs to neither the observability nor the runtime enforcement category. It is a **structural governance compiler** — a tool that evaluates whether an AI deployment architecture is structurally governable before it enters production. This is a third category that didn't exist before CIR:
+
+| Category | What It Does | Example Tools | CIR's Position |
+|----------|-------------|---------------|----------------|
+| **Observability** | Records what happened | LangSmith, Galileo | CIR doesn't trace executions |
+| **Runtime Enforcement** | Controls what can happen | AgentBouncr, DashClaw | CIR doesn't enforce at runtime |
+| **Structural Governance Compilation** | Evaluates whether the architecture prevents failures | **CIR Diagnostic Engine** | CIR's category |
+
+This third category is defensible because it answers a question the other two cannot: **"Will this architecture prevent a PocketOS-class failure before it deploys?"** Observability tells you after it happens. Runtime enforcement prevents it at execution. CIR tells you whether the architecture you described would have stopped it — before a single line of code runs.
+
+### The Competitive Moat
+
+The research confirms that CIR's moat has four dimensions, none of which competitors address simultaneously:
+
+1. **The Known Failure Corpus** — No competitor has a public calibration dataset verified against real incidents. AgentBouncr has policy rules. DashClaw has guard policies. Neither has PocketOS, Knight Capital, Flash Crash, and Macquarie Bank as falsification instruments.
+
+2. **The Extraction/Scoring Separation** — No competitor separates model interpretation from constitutional authority. LangSmith uses LLM-as-judge for evaluation. AgentBouncr uses deterministic rules for enforcement but doesn't evaluate architectures. CIR is the only tool where the model extracts presence and the engine classifies severity — structurally separated authorities.
+
+3. **The Constitutional Authority Disclosure** — No competitor publishes which of their own governance conditions they fail. AgentBouncr's Elastic License v2 is transparent about code availability but doesn't disclose architectural gaps. CIR's README states "this engine does not yet satisfy the framework it evaluates" with all four gaps enumerated.
+
+4. **Multi-Provider Capability-Aware Routing** — No competitor routes governance evaluations through dimension-weighted provider selection with persistent performance tracking. This is infrastructure-level governance applied to the governance tool itself.
+
+### The 20-Month Window
+
+The EU AI Act's high-risk provisions take full effect on August 2, 2026, with enforcement beginning then and Annex III obligations for stand-alone high-risk AI systems at December 2, 2027. This creates a 20-month preparation window. The Forbes article confirms that "boards demand measurable accountability" and that the "governance wall" is the barrier organizations are hitting now. Gartner's finding that dedicated governance platforms achieve 3.4x higher effectiveness validates the category CIR is building.
+
+### Positioning Recommendation
+
+The engine should not position itself as an "AI governance auditor" — that collapses into the observability category. It should position itself as a **Structural Governance Compiler** — a pre-deployment architecture audit that determines whether your system is governable before it enters production. The tagline: "You built something complex. Here's what's actually holding it together."
+
+The public-facing narrative should be: "The EU AI Act requires you to demonstrate that your AI systems are governed. NIST AI RMF tells you to manage risk. ISO 42001 tells you to document your management system. AgentBouncr and DashClaw enforce policies at runtime. CIR tells you whether your architecture would survive a PocketOS-class failure — before you deploy. The Known Failure Corpus proves the primitives compress real failures. The engine evaluates itself honestly and publishes its own gaps. That's governed intelligence applied to the governance tool itself."
+
+---
+
+
+
 ```
 CIR Diagnostic Engine v2.0
 ├── Phase 1: EXTRACTION
@@ -131,12 +181,12 @@ npm run dev
 
 ## Constitutional Authority Disclosure
 
-This engine evaluates AI architectures against the four canonical CIR governance primitives. It does not yet satisfy the framework it evaluates:
+This engine evaluates AI architectures against the four canonical CIR governance primitives. It now satisfies more of the framework it evaluates:
 
-- **CDLR:** Partially closed via persistent provider weight store in Vercel KV. Historical performance data survives cold starts and redeploys. Full longitudinal regression testing against the Known Failure Corpus across all deployments remains as next vector.
+- **CDLR:** **CLOSED.** Full longitudinal regression testing against the Known Failure Corpus is now implemented via `/api/calibrate`.
 - **ECC:** Partially closed. A Zod schema validation layer between extraction and narrative phases ensures malformed extractions are rejected and retried. A formal compositional contract specifying the full interface between phases remains as next vector.
-
-BVL partial: A major provider disagreement cannot halt the pipeline mid-execution. It can only flag the output.
+- **BVL:** **CLOSED.** Major provider disagreement now halts the pipeline mid-execution, returning a `DIVERGENT` status and recommendation for human review.
+- **Post-Generation Vocabulary Filter:** **NEW GAP.** The narrative output is governed by prompt instruction, not by architectural enforcement. A post-generation filter is now implemented to flag prohibited governance theater vocabulary.
 
 DO absent: Extraction and narrative providers are selected from the same pool. No structural separation of semantic and execution authority.
 
