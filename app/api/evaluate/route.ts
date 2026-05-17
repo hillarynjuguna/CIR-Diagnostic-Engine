@@ -213,7 +213,7 @@ export async function runEvaluationPipeline(architectureDescription: string): Pr
       status: 'DIVERGENT',
       message: 'Primary and verification providers produced materially different assessments. The classification is withheld pending human review.',
       primaryProvider: extractionProvider.name,
-      verificationProvider: narrativeProvider.name,
+      verificationProvider: narrativeProvider?.name || 'unknown',
       divergentFields: stability.providerDisagreement.divergentFields,
       primaryAssessment: extractionResult.result,
       verificationAssessment: narrative,
