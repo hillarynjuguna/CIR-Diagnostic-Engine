@@ -8,7 +8,7 @@
 
 import type { PrimitiveId, PrimitivePresence } from '../types'
 
-interface CalibrationCase {
+export interface CalibrationCase {
   name: string
   incident: string
   description: string
