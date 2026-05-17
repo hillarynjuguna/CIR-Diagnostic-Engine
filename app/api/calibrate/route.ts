@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { CALIBRATION_CASES } from '@/lib/evaluation/calibration'
+import { KNOWN_FAILURE_CORPUS } from '@/lib/evaluation/calibration'
 import { runEvaluationPipeline } from '@/app/api/evaluate/route'
 
 export const runtime = 'nodejs'
@@ -7,7 +7,7 @@ export const maxDuration = 90
 
 export async function GET(request: NextRequest) {
   const results = []
-  for (const case_ of CALIBRATION_CASES) {
+  for (const case_ of KNOWN_FAILURE_CORPUS) {
     const report = await runEvaluationPipeline(case_.description)
     const expectedPresence = case_.expectedPresence
     const actualPresence: Record<string, boolean> = {}
